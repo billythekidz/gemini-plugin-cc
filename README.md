@@ -31,13 +31,13 @@ Steps 1–2 run in your **terminal**. Steps 3–4 run **inside a Claude Code ses
 ### 1. Add the marketplace (terminal)
 
 ```bash
-claude plugin marketplace add billythekidz/gemini-plugin-cc
+/plugin marketplace add billythekidz/gemini-plugin-cc
 ```
 
 ### 2. Install the plugin (terminal)
 
 ```bash
-claude plugin install gemini@google-gemini
+/plugin install gemini@google-gemini
 ```
 
 ### 3. Reload plugins (inside Claude Code)

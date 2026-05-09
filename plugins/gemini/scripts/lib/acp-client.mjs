@@ -240,11 +240,13 @@ class SpawnedAcpClient extends AcpClientBase {
   }
 
   async initialize() {
-    this.proc = spawn("gemini", ["--acp"], {
+    const spawnOpts = {
       cwd: this.cwd,
       env: this.options.env ?? process.env,
-      stdio: ["pipe", "pipe", "pipe"]
-    });
+      stdio: ["pipe", "pipe", "pipe"],
+      ...(process.platform === "win32" ? { shell: true, windowsHide: true } : {})
+    };
+    this.proc = spawn("gemini", ["--acp"], spawnOpts);
 
     const rl = readline.createInterface({ input: this.proc.stdout });
     rl.on("line", (line) => this.handleLine(line));
@@ -296,7 +298,14 @@ class SpawnedAcpClient extends AcpClientBase {
       }, 50).unref?.();
     }
 
+    // On Windows with shell:true, the cmd.exe wrapper may not emit exit
+    // when the child is killed. Add a timeout to avoid hanging.
+    const exitTimeout = setTimeout(() => {
+      this.handleExit(null);
+    }, 2000).unref?.();
+
     await this.exitPromise;
+    clearTimeout(exitTimeout);
   }
 
   sendMessage(message) {

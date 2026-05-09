@@ -21,7 +21,8 @@ export function runCommand(command, args, options = {}) {
       maxBuffer: options.maxBuffer ?? 10 * 1024 * 1024,
       encoding: "utf8",
       env: options.env ?? process.env,
-      stdio: ["pipe", "pipe", "pipe"]
+      stdio: ["pipe", "pipe", "pipe"],
+      shell: process.platform === "win32"
     });
     return {
       stdout: result.stdout ?? "",
@@ -82,7 +83,7 @@ export function formatCommandFailure(result) {
 export function binaryAvailable(name) {
   try {
     const command = process.platform === "win32" ? "where" : "which";
-    const result = spawnSync(command, [name], { encoding: "utf8", stdio: "pipe" });
+    const result = spawnSync(command, [name], { encoding: "utf8", stdio: "pipe", shell: process.platform === "win32" });
     return result.status === 0;
   } catch {
     return false;
